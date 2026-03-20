@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Atelier Floral | Artisan Fleuriste</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES & BASE --- */
+        :root {
+            --vert-fonce: #1a362d;
+            --or: #d4af37;
+            --beige: #f9f6f0;
+            --texte: #333;
+            --gris-clair: #e0dcd2;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--beige);
+            color: var(--texte);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 400; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .anime { animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+        .delai-1 { animation-delay: 0.1s; }
+        .delai-2 { animation-delay: 0.3s; }
+        .delai-3 { animation-delay: 0.5s; }
+
+        /* --- NAVIGATION --- */
+        header {
+            background-color: var(--vert-fonce); padding: 1.5rem 5%; display: flex;
+            justify-content: space-between; align-items: center; position: sticky;
+            top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--or); margin: 0; cursor: pointer; }
+        nav button {
+            background: none; border: none; color: var(--beige); font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-left: 1.5rem;
+            cursor: pointer; transition: color 0.3s; position: relative;
+        }
+        nav button::after {
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -5px; left: 0; background-color: var(--or); transition: width 0.3s;
+        }
+        nav button:hover::after, nav button.actif::after { width: 100%; }
+        nav button:hover, nav button.actif { color: var(--or); }
+
+        /* --- EMPLACEMENTS PHOTOS ANIMÉS --- */
+        .photo-box {
+            background-color: #e8e6e1; display: flex; align-items: center; justify-content: center;
+            color: #999; font-style: italic; overflow: hidden; position: relative; border-radius: 4px;
+        }
+        .photo-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.03); transition: background 0.5s, transform 0.5s; z-index: 1;
+        }
+        .photo-box:hover::before { transform: scale(1.05); background: rgba(0,0,0,0); }
+        .photo-box span { z-index: 2; transition: transform 0.5s; }
+        .photo-box:hover span { transform: scale(1.1); color: var(--or); }
+
+        /* --- SYSTEME DE PAGES --- */
+        .page { display: none; padding: 4rem 5%; flex: 1; }
+        .page.active { display: block; }
+
+        /* --- STYLES COMMUNS --- */
+        .titre-section { text-align: center; color: var(--vert-fonce); font-size: 2.5rem; margin-bottom: 2rem; }
+        .texte-centre { text-align: center; max-width: 800px; margin: 0 auto 3rem auto; line-height: 1.8; }
+        .btn-principal { background-color: var(--or); color: white; border: none; padding: 1rem 2rem; font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; }
+        .btn-principal:hover { background-color: var(--vert-fonce); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        /* --- ACCUEIL --- */
+        .hero { text-align: center; padding: 8rem 2rem; background-color: var(--vert-fonce); color: white; border-bottom: 5px solid var(--or); margin: -4rem -5% 4rem -5%; position: relative; overflow: hidden;}
+        .hero h2 { font-size: 4rem; margin-bottom: 1rem; font-style: italic; }
+        .galerie-accueil { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 4rem; }
+        .galerie-accueil .photo-box { height: 300px; }
+        
+        /* INFOS PRATIQUES (ACCUEIL) */
+        .infos-pratiques { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 4rem; }
+        .horaires-box { background: white; padding: 2rem; border: 1px solid var(--gris-clair); border-radius: 4px; }
+        .horaires-box p { line-height: 1.8; margin: 0.5rem 0; }
+        .map-box { height: 100%; min-height: 350px; border-radius: 4px; overflow: hidden; border: 1px solid var(--gris-clair); }
+
+        /* --- COLLECTION (BOUQUETS PRÊTS) --- */
+        .grille-collection { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 3rem; }
+        .carte-produit { background: white; border: 1px solid var(--gris-clair); padding-bottom: 1.5rem; text-align: center; transition: 0.4s; overflow: hidden; border-radius: 4px;}
+        .carte-produit:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+        .carte-produit .photo-box { height: 350px; margin-bottom: 1.5rem; border-radius: 0; }
+        .carte-produit h3 { margin: 0 0 0.5rem 0; color: var(--vert-fonce); font-size: 1.5rem;}
+        .carte-produit p { color: #666; font-size: 0.9rem; padding: 0 1.5rem; height: 40px;}
+        .carte-produit .prix { color: var(--or); font-size: 1.3rem; font-weight: 600; margin: 1.5rem 0; }
+
+        /* --- HISTOIRE --- */
+        .histoire-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .histoire-image { height: 400px; border-radius: 4px; }
+
+        /* --- ATELIER (SUR-MESURE) --- */
+        .atelier-container { display: flex; flex-wrap: wrap; gap: 2rem; }
+        .catalogue-fleurs { flex: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+        .fleur-carte { background: white; border: 1px solid var(--gris-clair); padding: 1.5rem; text-align: center; transition: 0.3s; border-radius: 4px;}
+        .fleur-carte:hover { transform: translateY(-5px); border-color: var(--or); }
+        .composition-bouquet { flex: 1; min-width: 300px; background: white; padding: 2rem; border: 1px solid var(--gris-clair); position: sticky; top: 120px; height: fit-content; border-radius: 4px;}
+        .item-bouquet { display: flex; justify-content: space-between; border-bottom: 1px dashed #ccc; padding: 0.5rem 0; }
+
+        /* --- CONTACT --- */
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.8rem; border: 1px solid var(--gris-clair); box-sizing: border-box; font-family: 'Montserrat', sans-serif; border-radius: 4px;}
+        .form-group textarea { height: 150px; resize: vertical; }
+        .contact-info-box { background-color: white; padding: 2rem; border: 1px solid var(--gris-clair); border-radius: 4px;}
+
+        /* --- FOOTER --- */
+        footer { background-color: var(--vert-fonce); color: white; text-align: center; padding: 3rem 2rem; margin-top: auto; }
+        footer p { margin: 0.5rem 0; font-size: 0.9rem; color: var(--gris-clair); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="changerPage('accueil')">L'Atelier Floral</div>
+        <nav>
+            <button onclick="changerPage('accueil')" id="nav-accueil" class="actif">Accueil</button>
+            <button onclick="changerPage('collection')" id="nav-collection">La Collection</button>
+            <button onclick="changerPage('atelier')" id="nav-atelier">Sur-Mesure</button>
+            <button onclick="changerPage('histoire')" id="nav-histoire">Histoire</button>
+            <button onclick="changerPage('contact')" id="nav-contact">Contact</button>
+        </nav>
+    </header>
+
+    <main id="accueil" class="page active">
+        <div class="hero anime">
+            <h2>Votre Artisan Fleuriste 7j/7</h2>
+            <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto; line-height: 1.6;">L'Atelier Floral vous accueille dans le quartier Chambéry de Villenave-d'Ornon. Des compositions uniques et d'une fraîcheur incomparable pour sublimer vos plus beaux moments.</p>
+            <button class="btn-principal" style="margin-top: 2rem;" onclick="changerPage('collection')">Découvrir nos bouquets</button>
+        </div>
+        
+        <div class="galerie-accueil anime delai-2">
+            <div>
+                <div class="photo-box">
+                    <img src="mariage.jpg" alt="Mariages et Réceptions" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="text-align: center; color: var(--vert-fonce); margin-top: 1rem; font-size: 1.3rem;">Mariages & Réceptions</h3>
+            </div>
+            
+            <div>
+                <div class="photo-box">
+                    <img src="jardin.jpg" alt="Plantes et Décoration de Jardin" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="text-align: center; color: var(--vert-fonce); margin-top: 1rem; font-size: 1.3rem;">Plantes & Jardin</h3>
+            </div>
+            
+            <div>
+                <div class="photo-box">
+                    <img src="deuil.jpg" alt="Compositions de Deuil" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="text-align: center; color: var(--vert-fonce); margin-top: 1rem; font-size: 1.3rem;">Deuil & Recueillement</h3>
+            </div>
+        </div>
+
+        <h2 class="titre-section anime delai-3" style="margin-top: 6rem;">Nous Trouver</h2>
+        <div class="infos-pratiques anime delai-3">
+            <div class="horaires-box">
+                <h3 style="color: var(--or); margin-top: 0; font-size: 1.8rem;">Horaires d'ouverture</h3>
+                <p><strong>Ouvert 7j/7</strong></p>
+                <p><strong>Lundi - Samedi :</strong> 9h00 - 19h30</p>
+                <p><strong>Dimanche :</strong> Jusqu'à 13h</p>
+                
+                <h3 style="color: var(--or); margin-top: 2rem; font-size: 1.8rem;">Notre Adresse</h3>
+                <p>📍 59 Rte de Léognan (Quartier Chambéry)</p>
+                <p>33140 Villenave-d'Ornon</p>
+                <p>📞 01 23 45 67 89</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;"><em>🚚 Livraison offerte sur Villenave-d'Ornon. Envoi partout dans le monde via Interflora & Florajet.</em></p>
+            </div>
+            <div class="map-box">
+                <iframe src="https://maps.google.com/maps?q=59%20Rte%20de%20L%C3%A9ognan,%2033140%20Villenave-d'Ornon&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <main id="collection" class="page">
+        <h2 class="titre-section anime">Notre Collection Signature</h2>
+        <p class="texte-centre anime delai-1">Découvrez nos créations de saison, prêtes à être offertes. Livrées dans leur écrin d'eau pour une fraîcheur garantie.</p>
+        
+        <div class="grille-collection anime delai-2">
+            <div class="carte-produit">
+                <div class="photo-box">
+                    <img src="bouquet-rouge-et-blanc.png" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3>L'Amour Éternel</h3>
+                <p>Un classique revisité composé de roses rouges carmin et d'eucalyptus sauvage.</p>
+                <div class="prix">45.00 €</div>
+                <button class="btn-principal" onclick="alert('Bouquet ajouté !')">Ajouter au panier</button>
+            </div>
+            <div class="carte-produit">
+                <div class="photo-box">
+                    <img src="bouquet-ton-pastel.png" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3>Douceur d'Aube</h3>
+                <p>Pivoines roses, hortensias et petites marguerites pour un réveil tout en douceur.</p>
+                <div class="prix">55.00 €</div>
+                <button class="btn-principal" onclick="alert('Bouquet ajouté !')">Ajouter au panier</button>
+            </div>
+            <div class="carte-produit">
+                <div class="photo-box">
+                    <img src="bouquet-champetre.png" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3>Balade Champêtre</h3>
+                <p>Un vent de liberté avec nos tournesols, blé séché et feuillages de saison.</p>
+                <div class="prix">38.00 €</div>
+                <button class="btn-principal" onclick="alert('Bouquet ajouté !')">Ajouter au panier</button>
+            </div>
+            <div class="carte-produit">
+                <div class="photo-box">
+                    <img src="bouquet-blanc-pur.png" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3>L'Épure Blanche</h3>
+                <p>Lys éclatants et roses blanches pour une élégance minimaliste et raffinée.</p>
+                <div class="prix">42.00 €</div>
+                <button class="btn-principal" onclick="alert('Bouquet ajouté !')">Ajouter au panier</button>
+            </div>
+            <div class="carte-produit">
+                <div class="photo-box">
+                    <img src="bouquet-exotic.png" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3>Voyage Tropical</h3>
+                <p>Oiseaux de paradis et feuillages exotiques pour une touche d'évasion à la maison.</p>
+                <div class="prix">60.00 €</div>
+                <button class="btn-principal" onclick="alert('Bouquet ajouté !')">Ajouter au panier</button>
+            </div>
+        </div>
+    </main>
+
+    <main id="histoire" class="page">
+        <h2 class="titre-section anime">Notre Histoire & Savoir-Faire</h2>
+        <div class="histoire-grid anime delai-1">
+            <div>
+                <h3 style="color: var(--or); font-size: 2rem; margin-top: 0;">L'Atelier Floral, anciennement Florabel</h3>
+                <p style="line-height: 1.8;">Membres de la Fédération française des artisans fleuristes (FFAF), nous prenons très à cœur la qualité et la fraîcheur de nos végétaux. Nos apprentis ont d'ailleurs été plusieurs fois récompensés par une médaille d'or en concours nationaux ! Pour vous garantir une qualité incomparable, nous nous approvisionnons chaque jour sur les marchés d'intérêt nationaux.</p>
+                <p style="line-height: 1.8;">Que ce soit pour les moments de joie comme un mariage, ou pour les instants plus difficiles comme le deuil, votre artisan fleuriste confectionne des créations entièrement personnalisées. Envie de gâter vos proches ? Profitez de nos cartes messages, chocolats ou peluches, et bénéficiez de notre programme de fidélité (5% offerts au 7ème achat, et 10% pour les CE).</p>
+            </div>
+            <div class="photo-box histoire-image">
+                <img src="magasin.jpg.png" alt="Devanture de L'Atelier Floral" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+    </main>
+
+    <main id="atelier" class="page">
+        <h2 class="titre-section anime">L'Atelier Sur-Mesure</h2>
+        <p class="texte-centre anime delai-1">Composez vous-même. Sélectionnez vos tiges une à une.</p>
+        <div class="atelier-container anime delai-2">
+            <div class="catalogue-fleurs" id="catalogue"></div>
+            <div class="composition-bouquet">
+                <h3 style="margin-top:0; border-bottom: 2px solid var(--or); padding-bottom: 0.5rem;">Votre Composition</h3>
+                <div id="liste-bouquet"></div>
+                <div style="margin-top: 1.5rem; font-size: 1.2rem; font-weight: 600; display: flex; justify-content: space-between;">
+                    <span>Total</span><span id="prix-total">0.00 €</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="contact" class="page">
+        <h2 class="titre-section anime">Nous Contacter</h2>
+        <div class="contact-grid anime delai-1">
+            <div>
+                <h3 style="color: var(--or); margin-top: 0;">Laissez-nous un message</h3>
+                <form onsubmit="event.preventDefault(); alert('Message envoyé avec succès !');">
+                    <div class="form-group">
+                        <label>Nom complet</label>
+                        <input type="text" required placeholder="Votre nom">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" required placeholder="votre@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea required placeholder="Comment pouvons-nous vous aider ?"></textarea>
+                    </div>
+                    <button type="submit" class="btn-principal">Envoyer le message</button>
+                </form>
+            </div>
+            <div class="contact-info-box">
+                <h3 style="color: var(--or); margin-top: 0;">Nos Coordonnées</h3>
+                <p><strong>📍 Adresse :</strong><br>59 Rte de Léognan<br>33140 Villenave-d'Ornon</p>
+                <p><strong>📞 Téléphone :</strong><br>01 23 45 67 89</p>
+                <p><strong>✉️ Email :</strong><br>contact@latelierfloral.fr</p>
+                
+                <h3 style="color: var(--or); margin-top: 2rem;">Horaires d'ouverture</h3>
+                <p>Lundi - Samedi : 9h00 - 19h30<br>Dimanche : 9h00 - 13h00</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <h2 style="color: var(--or); margin: 0 0 1rem 0;">L'Atelier Floral</h2>
+        <p>© 2026 L'Atelier Floral - Artisan Fleuriste. Tous droits réservés.</p>
+        <p style="margin-top: 1rem;">Conditions Générales de Vente | Mentions Légales | Politique de Confidentialité</p>
+    </footer>
+
+    <script>
+        // GESTION DES PAGES ET RÉINITIALISATION DES ANIMATIONS
+        function changerPage(idPage) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('actif'));
+            
+            const pageActive = document.getElementById(idPage);
+            pageActive.classList.add('active');
+            document.getElementById('nav-' + idPage).classList.add('actif');
+            
+            // Relancer les animations
+            const elementsAnimes = pageActive.querySelectorAll('.anime');
+            elementsAnimes.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; /* Trigger reflow */
+                el.style.animation = null; 
+            });
+
+            window.scrollTo(0, 0);
+        }
+
+        // GESTION DE L'ATELIER (CORRIGÉ !)
+        const fleurs = [
+            { id: 1, nom: "Rose Rouge", prix: 4.50, image: "rose.png" },
+            { id: 2, nom: "Pivoine", prix: 6.50, image: "pivoine.png" },, // Transformé en "image"
+            { id: 3, nom: "Fleur de Lys", prix: 3.50, image: "lys.png" },
+            { id: 6, nom: "Feuillage", prix: 2.00, image: "feuillage.png" }, // Transformé en "image"
+        ];
+        let monBouquet = [];
+
+        function afficherCatalogue() {
+            const catalogue = document.getElementById('catalogue');
+            catalogue.innerHTML = ''; // Sécurité pour éviter les doublons
+            
+            fleurs.forEach(f => {
+                // L'ordinateur regarde s'il y a un point (.) dans le nom. Si oui -> photo. Si non -> emoji.
+                let affichageVisuel = f.image.includes('.') 
+                    ? `<img src="${f.image}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">` 
+                    : `<div style="font-size: 3rem; margin-bottom: 1rem;">${f.image}</div>`;
+
+                catalogue.innerHTML += `
+                    <div class="fleur-carte">
+                        ${affichageVisuel}
+                        <div style="font-family: 'Playfair Display'; font-size: 1.2rem;">${f.nom}</div>
+                        <div style="color: var(--or); margin: 1rem 0;">${f.prix.toFixed(2)} €</div>
+                        <button class="btn-principal" style="width: 100%; padding: 0.5rem;" onclick="ajouterAuBouquet(${f.id})">Ajouter</button>
+                    </div>
+                `;
+            });
+            mettreAJourBouquet();
+        }
+
+        function ajouterAuBouquet(id) { monBouquet.push(fleurs.find(f => f.id === id)); mettreAJourBouquet(); }
+
+        function mettreAJourBouquet() {
+            const liste = document.getElementById('liste-bouquet');
+            let total = 0;
+            if (monBouquet.length === 0) { liste.innerHTML = '<p style="color:#888;">Vide</p>'; document.getElementById('prix-total').innerText = '0.00 €'; return; }
+            liste.innerHTML = '';
+            monBouquet.forEach(f => {
+                total += f.prix;
+                liste.innerHTML += `<div class="item-bouquet"><span>${f.nom}</span><span>${f.prix.toFixed(2)} €</span></div>`;
+            });
+            document.getElementById('prix-total').innerText = total.toFixed(2) + ' €';
+        }
+
+        afficherCatalogue();
+    </script>
+</body>
+</html>
